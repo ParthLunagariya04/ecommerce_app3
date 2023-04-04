@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:ecommerce_app/src/constants/test_products.dart';
 import 'package:ecommerce_app/src/features/products/data/fake_products_repository.dart';
 import 'package:ecommerce_app/src/features/products/presentation/products_list/product_card.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
@@ -22,7 +21,7 @@ class ProductsGrid extends StatelessWidget {
         ? Center(
             child: Text(
               'No products found'.hardcoded,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           )
         : ProductsLayoutGrid(
