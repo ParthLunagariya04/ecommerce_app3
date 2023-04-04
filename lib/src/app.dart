@@ -7,6 +7,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Inside Build MyApp");
     return MaterialApp.router(
       routerConfig: goRouter,
       debugShowCheckedModeBanner: true,

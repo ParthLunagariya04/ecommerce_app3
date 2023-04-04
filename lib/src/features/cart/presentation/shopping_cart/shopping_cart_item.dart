@@ -47,6 +47,25 @@ class ShoppingCartItem extends ConsumerWidget {
         ),
       ),
     );
+
+    //other way to write above code 
+    // AsyncValueWidget<Product?>(
+    //   value: productValue,
+    //   data: (product) => Padding(
+    //     padding: const EdgeInsets.symmetric(vertical: Sizes.p8),
+    //     child: Card(
+    //       child: Padding(
+    //         padding: const EdgeInsets.all(Sizes.p16),
+    //         child: ShoppingCartItemContents(
+    //           product: product!,
+    //           item: item,
+    //           itemIndex: itemIndex,
+    //           isEditable: isEditable,
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 }
 
