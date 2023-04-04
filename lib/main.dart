@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ecommerce_app/src/app.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_web_plugins/url_strategy.dart';
 
@@ -15,7 +16,7 @@ void main() async {
     // turn off the # in the URLs on the web
     //GoRouter.setUrlPathStrategy(UrlPathStrategy.path);
     // * Entry point of the app
-    runApp(const MyApp());
+    runApp(const ProviderScope(child: MyApp()));
 
     // * This code will present some error UI if any uncaught exception happens
     FlutterError.onError = (FlutterErrorDetails details) {
