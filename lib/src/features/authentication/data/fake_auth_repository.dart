@@ -51,6 +51,7 @@ class FakeAuthRepository {
 
   Future<void> signInWithEamailAndPassword(
       String email, String password) async {
+    await Future.delayed(const Duration(seconds: 2));
     if (currentUser == null) {
       _createNewUser(email);
     }
@@ -58,6 +59,7 @@ class FakeAuthRepository {
 
   Future<void> createUserWithEmailAndPassword(
       String email, String password) async {
+    await Future.delayed(const Duration(seconds: 2));
     if (currentUser == null) {
       _createNewUser(email);
     }
