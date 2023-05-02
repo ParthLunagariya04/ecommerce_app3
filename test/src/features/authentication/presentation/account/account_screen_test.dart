@@ -1,27 +1,44 @@
-import 'package:ecommerce_app/src/features/authentication/presentation/account/account_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ecommerce_app/src/features/authentication/domain/app_user.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+import '../../../../mocks.dart';
+import '../../auth_robot.dart';
 
 void main() {
-  testWidgets('Cancel logout', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(
-        child: MaterialApp(
-          home: AccountScreen(),
-        ),
+  testWidgets('Cancel logout', (tester) async {
+    final r = AuthRobot(tester);
+    await r.pumpAccountScreen();
+    await r.tapLogoutButton();
+    r.expectLogoutDialogFound();
+    await r.tapCancelButton();
+    r.expectLogoutDialogNotFound();
+  });
+
+  testWidgets('Confirm logout success', (tester) async {
+    final r = AuthRobot(tester);
+    await r.pumpAccountScreen();
+    await r.tapLogoutButton();
+    r.expectLogoutDialogFound();
+    await r.tapDialogLogoutButton();
+    r.expectLogoutDialogNotFound();
+    r.expectErrorAlertNotFound();
+  });
+
+  testWidgets('Confirm logout, failure', (tester) async {
+    final r = AuthRobot(tester);
+    final authRepository = MockAuthRepository();
+    final exception = Exception('Connection Failed');
+    when(authRepository.signOut).thenThrow(exception);
+    when(authRepository.authStateChanges).thenAnswer(
+      (_) => Stream.value(
+        const AppUser(uid: '123', email: 'test@test.com'),
       ),
     );
-    final logoutButton = find.text('Logout');
-    expect(logoutButton, findsOneWidget);
-    await tester.tap(logoutButton);
-    await tester.pump();
-    final dialogTitle = find.text('Are you sure?');
-    expect(dialogTitle, findsOneWidget);
-    final cancelButton = find.text('Cancel');
-    expect(cancelButton, findsOneWidget);
-    await tester.tap(cancelButton);
-    await tester.pump();
-    expect(dialogTitle, findsNothing);
+    await r.pumpAccountScreen(authRepository: authRepository);
+    await r.tapLogoutButton();
+    r.expectLogoutDialogFound();
+    await r.tapDialogLogoutButton();
+    r.expectErrorAlertFound();
   });
 }
