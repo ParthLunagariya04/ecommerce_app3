@@ -21,12 +21,14 @@ dependencies:
   go_router: 5.0.1
   flutter_riverpod: ^2.3.2
   rxdart: ^0.27.7
-  mocktail: ^0.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: 2.0.1
+  integration_test:
+    sdk: flutter
+  mocktail: ^0.3.0
 
 # Custom app icon. For more info see: https://pub.dev/packages/flutter_launcher_icons
 flutter_icons:

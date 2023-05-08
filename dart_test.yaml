@@ -1,0 +1,4 @@
+# for remove tag warning while run test
+# for now just ignore the 'incorrect type' syntext error 
+tags:
+  golden:
