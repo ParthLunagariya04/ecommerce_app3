@@ -54,13 +54,13 @@ class ProductScreen extends StatelessWidget {
 /// Shows all the product details along with actions to:
 /// - leave a review
 /// - add to cart
-class ProductDetails extends StatelessWidget {
+class ProductDetails extends ConsumerWidget {
   const ProductDetails({super.key, required this.product});
   final Product product;
 
   @override
-  Widget build(BuildContext context) {
-    final priceFormatted = kCurrencyFormatter.format(product.price);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final priceFormatted = ref.watch(currencyFormatterProvider).format(product.price);
     return ResponsiveTwoColumnLayout(
       startContent: Card(
         child: Padding(
@@ -75,8 +75,7 @@ class ProductDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(product.title,
-                  style: Theme.of(context).textTheme.titleLarge),
+              Text(product.title, style: Theme.of(context).textTheme.titleLarge),
               gapH8,
               Text(product.description),
               // Only show average if there is at least one rating
@@ -87,8 +86,7 @@ class ProductDetails extends StatelessWidget {
               gapH8,
               const Divider(),
               gapH8,
-              Text(priceFormatted,
-                  style: Theme.of(context).textTheme.headlineSmall),
+              Text(priceFormatted, style: Theme.of(context).textTheme.headlineSmall),
               gapH8,
               LeaveReviewAction(productId: product.id),
               const Divider(),

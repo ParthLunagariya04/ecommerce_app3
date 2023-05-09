@@ -52,7 +52,7 @@ class FakeProductsRepository {
 
 // provider
 final productRepositoryProvider = Provider<FakeProductsRepository>((ref) {
-  return FakeProductsRepository();
+  return FakeProductsRepository(addDelay: false);
 });
 
 // stream provider

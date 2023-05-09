@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:ecommerce_app/src/common_widgets/alert_dialogs.dart';
 import 'package:ecommerce_app/src/features/products/data/fake_products_repository.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
+import 'package:ecommerce_app/src/utils/currency_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app/src/common_widgets/custom_image.dart';
 import 'package:ecommerce_app/src/common_widgets/item_quantity_selector.dart';
@@ -48,7 +49,7 @@ class ShoppingCartItem extends ConsumerWidget {
       ),
     );
 
-    //other way to write above code 
+    //other way to write above code
     // AsyncValueWidget<Product?>(
     //   value: productValue,
     //   data: (product) => Padding(
@@ -70,7 +71,7 @@ class ShoppingCartItem extends ConsumerWidget {
 }
 
 /// Shows a shopping cart item for a given product
-class ShoppingCartItemContents extends StatelessWidget {
+class ShoppingCartItemContents extends ConsumerWidget {
   const ShoppingCartItemContents({
     super.key,
     required this.product,
@@ -87,10 +88,8 @@ class ShoppingCartItemContents extends StatelessWidget {
   static Key deleteKey(int index) => Key('delete-$index');
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: error handling
-    // TODO: Inject formatter
-    final priceFormatted = NumberFormat.simpleCurrency().format(product.price);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final priceFormatted = ref.watch(currencyFormatterProvider).format(product.price);
     return ResponsiveTwoColumnLayout(
       startFlex: 1,
       endFlex: 2,
@@ -106,28 +105,10 @@ class ShoppingCartItemContents extends StatelessWidget {
           gapH24,
           isEditable
               // show the quantity selector and a delete button
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ItemQuantitySelector(
-                      quantity: item.quantity,
-                      maxQuantity: min(product.availableQuantity, 10),
-                      itemIndex: itemIndex,
-                      // TODO: Implement onChanged
-                      onChanged: (value) {
-                        showNotImplementedAlertDialog(context: context);
-                      },
-                    ),
-                    IconButton(
-                      key: deleteKey(itemIndex),
-                      icon: Icon(Icons.delete, color: Colors.red[700]),
-                      // TODO: Implement onPressed
-                      onPressed: () {
-                        showNotImplementedAlertDialog(context: context);
-                      },
-                    ),
-                    const Spacer(),
-                  ],
+              ? EditOrRemoveItemWidget(
+                  product: product,
+                  item: item,
+                  itemIndex: itemIndex,
                 )
               // else, show the quantity as a read-only label
               : Padding(
@@ -138,6 +119,49 @@ class ShoppingCartItemContents extends StatelessWidget {
                 ),
         ],
       ),
+    );
+  }
+}
+
+// custom widget to show the quantity selector and a delete button
+class EditOrRemoveItemWidget extends ConsumerWidget {
+  const EditOrRemoveItemWidget({
+    super.key,
+    required this.product,
+    required this.item,
+    required this.itemIndex,
+  });
+  final Product product;
+  final Item item;
+  final int itemIndex;
+
+  // * Keys for testing using find.byKey()
+  static Key deleteKey(int index) => Key('delete-$index');
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        ItemQuantitySelector(
+          quantity: item.quantity,
+          maxQuantity: min(product.availableQuantity, 10),
+          itemIndex: itemIndex,
+          // TODO: Implement onChanged
+          onChanged: (value) {
+            showNotImplementedAlertDialog(context: context);
+          },
+        ),
+        IconButton(
+          key: deleteKey(itemIndex),
+          icon: Icon(Icons.delete, color: Colors.red[700]),
+          // TODO: Implement onPressed
+          onPressed: () {
+            showNotImplementedAlertDialog(context: context);
+          },
+        ),
+        const Spacer(),
+      ],
     );
   }
 }
