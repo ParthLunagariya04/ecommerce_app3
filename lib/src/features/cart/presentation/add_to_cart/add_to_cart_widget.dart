@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:ecommerce_app/src/features/cart/application/cart_service.dart';
 import 'package:ecommerce_app/src/features/cart/presentation/add_to_cart/add_to_cart_controller.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:ecommerce_app/src/utils/async_value_ui.dart';
@@ -19,8 +20,9 @@ class AddToCartWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<AsyncValue<int>>(
         addToCartControllerProvider, (_, state) => state.showAlertDialogOnError(context));
-    final availableQuantity = product.availableQuantity;
+    final availableQuantity = ref.watch(itemAvailableQuantityProvider(product));
     final state = ref.watch(addToCartControllerProvider);
+    
     debugPrint('MyLogData state ==> ${state.toString()}');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
