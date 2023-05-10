@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ecommerce_app/src/app.dart';
+import 'package:ecommerce_app/src/features/cart/application/cart_sync_service.dart';
 import 'package:ecommerce_app/src/features/cart/data/local/local_cart_repository.dart';
 import 'package:ecommerce_app/src/features/cart/data/local/sembast_cart_repository.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
@@ -19,11 +20,15 @@ void main() async {
     //GoRouter.setUrlPathStrategy(UrlPathStrategy.path);
     // * Entry point of the app
     final localCartRepository = await SembastCartRepository.makeDefault();
+    final container = ProviderContainer(
+      overrides: [
+        localCartRepositoryProvider.overrideWithValue(localCartRepository),
+      ],
+    );
+    container.read(cartSyncServiceProvider);
     runApp(
-      ProviderScope(
-        overrides: [
-          localCartRepositoryProvider.overrideWithValue(localCartRepository),
-        ],
+      UncontrolledProviderScope(
+        container: container,
         child: const MyApp(),
       ),
     );
