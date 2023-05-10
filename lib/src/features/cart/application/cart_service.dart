@@ -8,32 +8,26 @@ import 'package:ecommerce_app/src/features/products/domain/product.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CartService {
-  CartService({
-    required this.authRepository,
-    required this.localCartRepository,
-    required this.remoteCartRepository,
-  });
-  final FakeAuthRepository authRepository;
-  final LocalCartRepository localCartRepository;
-  final RemoteCartRepository remoteCartRepository;
+  CartService(this.ref);
+  final Ref ref;
 
   /// fetch the cart to the local or remote repository
   /// depending on the user auth state
   Future<Cart> _fetchCart() {
-    final user = authRepository.currentUser;
+    final user = ref.read(authRepositoryProvider).currentUser;
     if (user != null) {
-      return remoteCartRepository.fetchCart(user.uid);
+      return ref.read(remoteCartRepositoryProvider).fetchCart(user.uid);
     } else {
-      return localCartRepository.fetchCart();
+      return ref.read(localCartRepositoryProvider).fetchCart();
     }
   }
 
   Future<void> _setCart(Cart cart) async {
-    final user = authRepository.currentUser;
+    final user = ref.read(authRepositoryProvider).currentUser;
     if (user != null) {
-      return remoteCartRepository.setCart(user.uid, cart);
+      return ref.read(remoteCartRepositoryProvider).setCart(user.uid, cart);
     } else {
-      await localCartRepository.setCart(cart);
+      await ref.read(localCartRepositoryProvider).setCart(cart);
     }
   }
 
@@ -59,9 +53,5 @@ class CartService {
 }
 
 final cartServiceProvider = Provider<CartService>((ref) {
-  return CartService(
-    authRepository: ref.watch(authRepositoryProvider),
-    localCartRepository: ref.watch(localCartRepositoryProvider),
-    remoteCartRepository: ref.watch(remoteCartRepositoryProvider),
-  );
+  return CartService(ref);
 });
