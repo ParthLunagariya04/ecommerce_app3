@@ -3,10 +3,10 @@
 class AppUser {
   const AppUser({
     required this.uid,
-    this.email,
+    required this.email,
   });
   final String uid;
-  final String? email;
+  final String email;
 
   @override
   bool operator ==(covariant AppUser other) {
