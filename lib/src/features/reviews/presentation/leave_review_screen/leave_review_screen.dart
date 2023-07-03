@@ -1,5 +1,6 @@
 import 'package:ecommerce_app/src/common_widgets/alert_dialogs.dart';
 import 'package:ecommerce_app/src/constants/breakpoints.dart';
+import 'package:ecommerce_app/src/features/products/domain/product.dart';
 import 'package:ecommerce_app/src/features/reviews/presentation/product_reviews/product_rating_bar.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +8,11 @@ import 'package:ecommerce_app/src/common_widgets/responsive_center.dart';
 import 'package:ecommerce_app/src/common_widgets/primary_button.dart';
 import 'package:ecommerce_app/src/constants/app_sizes.dart';
 import 'package:ecommerce_app/src/features/reviews/domain/review.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LeaveReviewScreen extends StatelessWidget {
   const LeaveReviewScreen({super.key, required this.productId});
-  final String productId;
+  final ProductID productId;
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +31,19 @@ class LeaveReviewScreen extends StatelessWidget {
   }
 }
 
-class LeaveReviewForm extends StatefulWidget {
+class LeaveReviewForm extends ConsumerStatefulWidget {
   const LeaveReviewForm({super.key, required this.productId, this.review});
-  final String productId;
+  final ProductID productId;
   final Review? review;
 
   // * Keys for testing using find.byKey()
   static const reviewCommentKey = Key('reviewComment');
 
   @override
-  State<LeaveReviewForm> createState() => _LeaveReviewFormState();
+  ConsumerState<LeaveReviewForm> createState() => _LeaveReviewFormState();
 }
 
-class _LeaveReviewFormState extends State<LeaveReviewForm> {
+class _LeaveReviewFormState extends ConsumerState<LeaveReviewForm> {
   final _controller = TextEditingController();
 
   double _rating = 0;
@@ -49,11 +51,7 @@ class _LeaveReviewFormState extends State<LeaveReviewForm> {
   @override
   void initState() {
     super.initState();
-    final review = widget.review;
-    if (review != null) {
-      _controller.text = review.comment;
-      _rating = review.score;
-    }
+    // TODO: Initialize state
   }
 
   @override
@@ -109,7 +107,10 @@ class _LeaveReviewFormState extends State<LeaveReviewForm> {
           text: 'Submit'.hardcoded,
           // TODO: Loading state
           isLoading: false,
-          onPressed: _rating == 0 ? null : _submitReview,
+          onPressed: _rating == 0
+              ? null
+              // TODO: submit review
+              : () => showNotImplementedAlertDialog(context: context),
         )
       ],
     );

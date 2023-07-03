@@ -34,7 +34,7 @@ void main() {
   test('watchProductList emits global list', () {
     final productRepository = makeProductRepository();
     expect(
-      productRepository.watchProductList(),
+      productRepository.watchProductsList(),
       emits(kTestProducts),
     );
   });
