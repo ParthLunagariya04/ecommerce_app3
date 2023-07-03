@@ -11,6 +11,7 @@ import 'package:ecommerce_app/src/common_widgets/primary_button.dart';
 import 'package:ecommerce_app/src/constants/app_sizes.dart';
 import 'package:ecommerce_app/src/features/reviews/domain/review.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class LeaveReviewScreen extends StatelessWidget {
   const LeaveReviewScreen({super.key, required this.productId});
@@ -79,10 +80,10 @@ class _LeaveReviewFormState extends ConsumerState<LeaveReviewForm> {
   Widget build(BuildContext context) {
     // error state
     ref.listen(
-      LeaveReviewControllerProvider,
+      leaveReviewControllerProvider,
       (_, state) => state.showAlertDialogOnError(context),
     );
-    final state = ref.watch(LeaveReviewControllerProvider);
+    final state = ref.watch(leaveReviewControllerProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -117,10 +118,11 @@ class _LeaveReviewFormState extends ConsumerState<LeaveReviewForm> {
           isLoading: state.isLoading,
           onPressed: state.isLoading || _rating == 0
               ? null
-              : () => ref.read(LeaveReviewControllerProvider.notifier).submitReview(
+              : () => ref.read(leaveReviewControllerProvider.notifier).submitReview(
                     productId: widget.productId,
                     rating: _rating,
                     comment: _controller.text,
+                    onSuccess: context.pop,
                   ),
         )
       ],
