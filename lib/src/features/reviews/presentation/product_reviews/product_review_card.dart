@@ -1,4 +1,3 @@
-import 'package:ecommerce_app/src/common_widgets/alert_dialogs.dart';
 import 'package:ecommerce_app/src/features/reviews/presentation/product_reviews/product_rating_bar.dart';
 import 'package:ecommerce_app/src/utils/date_formatter.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +22,11 @@ class ProductReviewCard extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ProductRatingBar(
-                  initialRating: review.score,
+                  initialRating: review.rating,
                   ignoreGestures: true,
                   itemSize: 20,
                   // TODO: Implement onRatingUpdate
-                  onRatingUpdate: (value) {
-                    showNotImplementedAlertDialog(context: context);
-                  },
+                  onRatingUpdate: (value) {},
                 ),
                 Text(dateFormatted, style: Theme.of(context).textTheme.bodySmall),
               ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ecommerce_app/src/constants/test_products.dart';
 import 'package:ecommerce_app/src/features/products/domain/product.dart';
 import 'package:ecommerce_app/src/utils/delay.dart';
+import 'package:ecommerce_app/src/utils/in_memory_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,32 +14,47 @@ class FakeProductsRepository {
 
   FakeProductsRepository({this.addDelay = true});
   final bool addDelay;
-  final List<Product> _product = kTestProducts;
+
+  /// Preload with the default list of products when the app starts
+  final _products = InMemoryStore<List<Product>>(List.from(kTestProducts));
 
   //synchronous method
   List<Product> getProductList() {
-    return _product;
+    return _products.value;
   }
 
   Product? getProduct(String id) {
-    return _getProduct(_product, id);
+    return _getProduct(_products.value, id);
   }
 
   //asynchronous method
   Future<List<Product>> fetchProductList() async {
     await delay(addDelay);
     //throw Exception('Connection failed');
-    return Future.value(_product);
+    return Future.value(_products.value);
   }
 
-  Stream<List<Product>> watchProductList() async* {
-    await delay(addDelay);
-    yield _product;
-    //return Stream.value(_product);
+  Stream<List<Product>> watchProductsList() {
+    return _products.stream;
   }
 
   Stream<Product?> watchProduct(String id) {
-    return watchProductList().map((products) => _getProduct(_product, id));
+    return watchProductsList().map((products) => _getProduct(products, id));
+  }
+
+  /// Update product or add a new one
+  Future<void> setProduct(Product product) async {
+    await delay(addDelay);
+    final products = _products.value;
+    final index = products.indexWhere((p) => p.id == product.id);
+    if (index == -1) {
+      // if not found, add as a new product
+      products.add(product);
+    } else {
+      // else, overwrite previous product
+      products[index] = product;
+    }
+    _products.value = products;
   }
 
   static Product? _getProduct(List<Product> product, String id) {
@@ -56,16 +72,14 @@ final productRepositoryProvider = Provider<FakeProductsRepository>((ref) {
 });
 
 // stream provider
-final productListStreamProvider =
-    StreamProvider.autoDispose<List<Product>>((ref) {
+final productListStreamProvider = StreamProvider.autoDispose<List<Product>>((ref) {
   debugPrint("created productListStreamProvider");
   final productRepository = ref.watch(productRepositoryProvider);
-  return productRepository.watchProductList();
+  return productRepository.watchProductsList();
 });
 
 // future provider
-final productListFutureProvider =
-    FutureProvider.autoDispose<List<Product>>((ref) {
+final productListFutureProvider = FutureProvider.autoDispose<List<Product>>((ref) {
   final productRepository = ref.watch(productRepositoryProvider);
   return productRepository.fetchProductList();
 });
