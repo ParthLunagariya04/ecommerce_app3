@@ -13,25 +13,31 @@ class LeaveReviewController extends StateNotifier<AsyncValue<void>> {
   final DateTime Function() currentDateBuilder;
 
   Future<void> submitReview({
+    Review? previousReview,
     required ProductID productId,
     required double rating,
     required String comment,
     required void Function() onSuccess,
   }) async {
-    final review = Review(
-      rating: rating,
-      comment: comment,
-      date: currentDateBuilder(),
-    );
-    state = const AsyncLoading();
-    final newState = await AsyncValue.guard(
-      () => reviewsService.submitReview(productId: productId, review: review),
-    );
-    if (mounted) {
-      state = newState;
-      if (state.hasError == false) {
-        onSuccess();
+    // only submit if the rating is new or it has changed
+    if (previousReview == null || rating != previousReview.rating || comment != previousReview.comment) {
+      final review = Review(
+        rating: rating,
+        comment: comment,
+        date: currentDateBuilder(),
+      );
+      state = const AsyncLoading();
+      final newState = await AsyncValue.guard(
+        () => reviewsService.submitReview(productId: productId, review: review),
+      );
+      if (mounted) {
+        state = newState;
+        if (state.hasError == false) {
+          onSuccess();
+        }
       }
+    } else {
+      onSuccess();
     }
   }
 }
