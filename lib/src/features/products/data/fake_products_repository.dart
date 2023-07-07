@@ -29,7 +29,6 @@ class FakeProductsRepository {
 
   //asynchronous method
   Future<List<Product>> fetchProductList() async {
-    await delay(addDelay);
     //throw Exception('Connection failed');
     return Future.value(_products.value);
   }
@@ -55,6 +54,21 @@ class FakeProductsRepository {
       products[index] = product;
     }
     _products.value = products;
+  }
+
+  /// Search for products where the title contains the search query
+  Future<List<Product>> searchProducts(String query) async {
+    assert(
+      _products.value.length <= 100,
+      'Client-side search should only be performed if the number of products is small. '
+      'Consider doing server-side search for larger datasets.',
+    );
+    // Get all products
+    final productsList = await fetchProductList();
+    // Match all products where the title contains the query
+    return productsList
+        .where((product) => product.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   static Product? _getProduct(List<Product> product, String id) {
@@ -98,3 +112,17 @@ final productProvider = StreamProvider.autoDispose.family<Product?, String>(
     return productRepository.watchProduct(id);
   },
 );
+
+final productListSearchProvider =
+    FutureProvider.autoDispose.family<List<Product>, String>((ref, query) async {
+  // ref.onDispose(() => debugPrint('disposed: $query'));
+  // ref.onCancel(() => debugPrint('cancel: $query'));
+  // this is use for data cashing
+  final link = ref.keepAlive();
+  Timer(const Duration(seconds: 5), () {
+    link.close();
+  });
+  //await Future.delayed(const Duration(milliseconds: 500));
+  final productRepository = ref.watch(productRepositoryProvider);
+  return productRepository.searchProducts(query);
+});
